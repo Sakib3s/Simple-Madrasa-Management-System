@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+require __DIR__.'/includes/auth.php';require __DIR__.'/config/database.php';require __DIR__.'/includes/functions.php';
+$title='Fees';$fees=$pdo->query('SELECT f.*,s.name,s.student_id FROM fees f JOIN students s ON s.id=f.student_id ORDER BY f.id DESC')->fetchAll();
+require __DIR__.'/includes/header.php';
+?>
+<div class="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><p class="text-sm text-slate-500">Record monthly payments and outstanding balances.</p><a href="fee-add.php" class="rounded-lg bg-green-700 px-4 py-2.5 text-center text-sm font-semibold text-white"><i class="fa-solid fa-plus mr-2"></i>Add Fee Payment</a></div>
+<div class="rounded-xl bg-white shadow-sm"><?php if(!$fees):?><p class="p-10 text-center text-sm text-slate-500">No fee records found.</p><?php else:?><div class="overflow-x-auto"><table class="w-full min-w-[750px] text-left text-sm"><thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="px-5 py-3">Student</th><th class="px-5 py-3">Month</th><th class="px-5 py-3">Amount</th><th class="px-5 py-3">Paid</th><th class="px-5 py-3">Due</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Payment Date</th></tr></thead><tbody><?php foreach($fees as $fee):?><tr class="border-t"><td class="px-5 py-3"><p class="font-medium"><?=e($fee['name'])?></p><p class="text-xs text-slate-500"><?=e($fee['student_id'])?></p></td><td class="px-5 py-3"><?=e($fee['fee_month'])?></td><td class="px-5 py-3"><?=number_format((float)$fee['amount'],2)?></td><td class="px-5 py-3"><?=number_format((float)$fee['paid_amount'],2)?></td><td class="px-5 py-3"><?=number_format((float)$fee['due_amount'],2)?></td><td class="px-5 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold <?=$fee['status']==='Paid'?'bg-green-100 text-green-700':($fee['status']==='Partial'?'bg-yellow-100 text-yellow-700':'bg-red-100 text-red-700')?>"><?=e($fee['status'])?></span></td><td class="px-5 py-3"><?=e($fee['payment_date'])?></td></tr><?php endforeach;?></tbody></table></div><?php endif;?></div>
+<?php require __DIR__.'/includes/footer.php';?>
